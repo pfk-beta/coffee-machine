@@ -48,7 +48,7 @@ class TestCoffeeMachine(unittest.TestCase):
 
     def test_maitenance_window(self):
         coffeemachine = CoffeeMachine(1000, 500)
-        coffeemachine.coffee_counter = CoffeeMachine.NEED_TECHNICAL_SERVICE_AFTER_N_COFFEES
+        coffeemachine.__coffee_counter = CoffeeMachine.NEED_TECHNICAL_SERVICE_AFTER_N_COFFEES
 
         # next coffee should cause problem with coffee machine
 

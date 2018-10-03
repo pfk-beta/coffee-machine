@@ -26,68 +26,72 @@ class CoffeeMachine:
     }
 
     def __init__(self, water_level, coffeebeans_level):
-        self.watertank_level = min(water_level, CoffeeMachine.WATERTANK_SIZE)
-        self.coffeebeans_level = min(coffeebeans_level, CoffeeMachine.COFFEETANK_SIZE)
-        self.milk_level = 0
-        self.coffee_counter = 0
-        self.coffee_start = datetime.now()
-        self.coffee_stats = defaultdict(int)
+        self.__watertank_level = min(water_level, CoffeeMachine.WATERTANK_SIZE)
+        self.__coffeebeans_level = min(coffeebeans_level, CoffeeMachine.COFFEETANK_SIZE)
+        self.__milk_level = 0
+        self.__coffee_counter = 0
+        self.__coffee_start = datetime.now()
+        self.__coffee_stats = defaultdict(int)
 
     def fill_water(self, water_amount=500):
-        if self.watertank_level + water_amount > CoffeeMachine.WATERTANK_SIZE:
+        if self.__watertank_level + water_amount > CoffeeMachine.WATERTANK_SIZE:
             raise TooMuchWaterException()
-        self.watertank_level += water_amount
+        self.__watertank_level += water_amount
 
     def fill_coffee(self, coffeebeans_level_amount=200):
-        if self.coffeebeans_level + coffeebeans_level_amount > CoffeeMachine.COFFEETANK_SIZE:
+        if self.__coffeebeans_level + coffeebeans_level_amount > CoffeeMachine.COFFEETANK_SIZE:
             raise TooMuchCoffeeException()
-        self.coffeebeans_level += coffeebeans_level_amount
+        self.__coffeebeans_level += coffeebeans_level_amount
 
     def attach_milkbox(self, milkbox=1000):
-        self.milk_level = milkbox
+        self.__milk_level = milkbox
 
     def get_americano(self):
-        return self._get_coffee('americano')
+        return self.__get_coffee('americano')
 
     def get_espresso(self):
-        return self._get_coffee('espresso')
+        return self.__get_coffee('espresso')
 
     def get_capuchino(self):
-        return self._get_coffee('capuchino')
+        return self.__get_coffee('capuchino')
 
     def get_late_machiato(self):
-        return self._get_coffee('late_machiato')
+        return self.__get_coffee('late_machiato')
 
     def showme_coffee_stats(self):
-        print(self.coffee_stats)
+        print(self.__coffee_stats)
 
-    def _get_coffee(self, coffee_type):
-        if self.coffee_counter == CoffeeMachine.NEED_TECHNICAL_SERVICE_AFTER_N_COFFEES:
+    def showme_uptime(self):
+        delta = datetime.now() - self.__coffee_start
+        print("%d seconds" % delta.seconds)
+
+    def __get_coffee(self, coffee_type):
+        if self.__coffee_counter == CoffeeMachine.NEED_TECHNICAL_SERVICE_AFTER_N_COFFEES:
             raise MaitenanceException()
 
         coffee = CoffeeMachine.COFFEE_DEFINITIONS[coffee_type]
 
-        if coffee.water > self.watertank_level:
+        if coffee.water > self.__watertank_level:
             raise NoWaterException()
 
-        if coffee.coffee_beans > self.coffeebeans_level:
+        if coffee.coffee_beans > self.__coffeebeans_level:
             raise NoCoffeeBeansException()
 
-        if coffee.milk > self.milk_level:
+        if coffee.milk > self.__milk_level:
             raise NoMilkException()
 
-        return self._prepare_coffee(coffee)
+        return self.__prepare_coffee(coffee)
 
-    def _prepare_coffee(self, coffee):
-        self.coffeebeans_level -= coffee.coffee_beans
-        self.watertank_level -= coffee.water
-        self.milk_level -= coffee.milk
+    def __prepare_coffee(self, coffee):
+        self.__coffeebeans_level -= coffee.coffee_beans
+        self.__watertank_level -= coffee.water
+        self.__milk_level -= coffee.milk
 
         for x in tqdm(range(100)):
             # TODO: more spectacular, progressbar of emptying tanks
             sleep(CoffeeMachine.TIME_OF_PREPARING_COFFEE / 100.)
 
-        self.coffee_counter += 1
-        self.coffee_stats[coffee.name] += 1
+        self.__coffee_counter += 1
+        self.__coffee_stats[coffee.name] += 1
 
         return coffee
