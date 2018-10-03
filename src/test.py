@@ -1,6 +1,6 @@
 import unittest
-from coffeemachine import CoffeeMachine, NoWaterException, NoCoffeeBeansException, MaitenanceException
-
+from coffeemachine import CoffeeMachine
+from exceptions import NoWaterException, NoCoffeeBeansException, MaitenanceException
 
 class TestCoffeeMachine(unittest.TestCase):
 
@@ -55,6 +55,8 @@ class TestCoffeeMachine(unittest.TestCase):
         with self.assertRaises(MaitenanceException) as context:
             coffee = coffeemachine.get_late_machiato()
             self.assertIsNone(coffee)
+
+    # TODO: test overflow tanks...
 
 
 if __name__ == '__main__':

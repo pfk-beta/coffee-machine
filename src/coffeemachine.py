@@ -1,33 +1,11 @@
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 from datetime import datetime
 from time import sleep
 
 from tqdm import tqdm
 
-
-class NoMilkException(Exception):
-    pass
-
-
-class NoWaterException(Exception):
-    pass
-
-
-class NoCoffeeBeansException(Exception):
-    pass
-
-
-class MaitenanceException(Exception):
-    pass
-
-
-class TooMuchWaterException(Exception):
-    pass
-
-
-class TooMuchCoffeeException(Exception):
-    pass
-
+from exceptions import TooMuchWaterException, TooMuchCoffeeException, MaitenanceException, NoWaterException, \
+    NoCoffeeBeansException, NoMilkException
 
 Coffee = namedtuple(
     'Coffee',
@@ -39,8 +17,6 @@ class CoffeeMachine:
     COFFEETANK_SIZE = 1000
     NEED_TECHNICAL_SERVICE_AFTER_N_COFFEES = 2000  # every 2000 coffees, machine should call for
     TIME_OF_PREPARING_COFFEE = 100 * 0.05
-
-    # TODO: add statistics of making coffee
 
     COFFEE_DEFINITIONS = {
         'americano': Coffee('Americano', 200, 200, 30, 0),
@@ -55,6 +31,7 @@ class CoffeeMachine:
         self.milk_level = 0
         self.coffee_counter = 0
         self.coffee_start = datetime.now()
+        self.coffee_stats = defaultdict(int)
 
     def fill_water(self, water_amount=500):
         if self.watertank_level + water_amount > CoffeeMachine.WATERTANK_SIZE:
@@ -80,6 +57,9 @@ class CoffeeMachine:
 
     def get_late_machiato(self):
         return self._get_coffee('late_machiato')
+
+    def showme_coffee_stats(self):
+        print(self.coffee_stats)
 
     def _get_coffee(self, coffee_type):
         if self.coffee_counter == CoffeeMachine.NEED_TECHNICAL_SERVICE_AFTER_N_COFFEES:
@@ -108,5 +88,6 @@ class CoffeeMachine:
             sleep(CoffeeMachine.TIME_OF_PREPARING_COFFEE / 100.)
 
         self.coffee_counter += 1
+        self.coffee_stats[coffee.name] += 1
 
         return coffee
