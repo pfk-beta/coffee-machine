@@ -21,13 +21,16 @@ class MaitenanceException(Exception):
     pass
 
 
-Coffee = namedtuple('Coffee', ['name', 'size', 'water', 'coffee_beans', 'milk'])
+Coffee = namedtuple(
+    'Coffee',
+    ['name', 'size', 'water', 'coffee_beans', 'milk'])
 
 
 class CoffeeMachine:
     WATERTANK_SIZE = 5000
     COFFEETANK_SIZE = 1000
     NEED_TECHNICAL_SERVICE_AFTER_N_COFFEES = 2000  # every 2000 coffees, machine should call for
+    TIME_OF_PREPARING_COFFEE = 100 * 0.05
 
     COFFEE_DEFINITIONS = {
         'americano': Coffee('Americano', 200, 200, 30, 0),
@@ -72,8 +75,6 @@ class CoffeeMachine:
 
         coffee = CoffeeMachine.COFFEE_DEFINITIONS[coffee_type]
 
-        print("Prepare cup of size {} ml".format(coffee.size))
-
         if coffee.water > self.watertank_level:
             raise NoWaterException()
 
@@ -92,4 +93,6 @@ class CoffeeMachine:
 
         for x in tqdm(range(100)):
             # TODO: more spectacular, progressbar of emptying tanks
-            sleep(0.5)
+            sleep(CoffeeMachine.TIME_OF_PREPARING_COFFEE / 100.)
+
+        self.coffee_counter += 1
