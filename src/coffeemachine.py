@@ -21,6 +21,14 @@ class MaitenanceException(Exception):
     pass
 
 
+class TooMuchWaterException(Exception):
+    pass
+
+
+class TooMuchCoffeeException(Exception):
+    pass
+
+
 Coffee = namedtuple(
     'Coffee',
     ['name', 'size', 'water', 'coffee_beans', 'milk'])
@@ -31,6 +39,8 @@ class CoffeeMachine:
     COFFEETANK_SIZE = 1000
     NEED_TECHNICAL_SERVICE_AFTER_N_COFFEES = 2000  # every 2000 coffees, machine should call for
     TIME_OF_PREPARING_COFFEE = 100 * 0.05
+
+    # TODO: add statistics of making coffee
 
     COFFEE_DEFINITIONS = {
         'americano': Coffee('Americano', 200, 200, 30, 0),
@@ -47,12 +57,14 @@ class CoffeeMachine:
         self.coffee_start = datetime.now()
 
     def fill_water(self, water_amount=500):
+        if self.watertank_level + water_amount > CoffeeMachine.WATERTANK_SIZE:
+            raise TooMuchWaterException()
         self.watertank_level += water_amount
-        # TODO: exception or if for overflow
 
     def fill_coffee(self, coffeebeans_level_amount=200):
+        if self.coffeebeans_level + coffeebeans_level_amount > CoffeeMachine.COFFEETANK_SIZE:
+            raise TooMuchCoffeeException()
         self.coffeebeans_level += coffeebeans_level_amount
-        # TODO: exception or if for overflow
 
     def attach_milkbox(self, milkbox=1000):
         self.milk_level = milkbox
@@ -84,7 +96,7 @@ class CoffeeMachine:
         if coffee.milk > self.milk_level:
             raise NoMilkException()
 
-        self._prepare_coffee(coffee)
+        return self._prepare_coffee(coffee)
 
     def _prepare_coffee(self, coffee):
         self.coffeebeans_level -= coffee.coffee_beans
@@ -96,3 +108,5 @@ class CoffeeMachine:
             sleep(CoffeeMachine.TIME_OF_PREPARING_COFFEE / 100.)
 
         self.coffee_counter += 1
+
+        return coffee

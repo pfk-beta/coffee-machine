@@ -7,37 +7,44 @@ class TestCoffeeMachine(unittest.TestCase):
     def test_empty_watertank(self):
         coffeemachine = CoffeeMachine(0, 1000)
         with self.assertRaises(NoWaterException) as context:
-            coffeemachine.get_americano()
+            coffee = coffeemachine.get_americano()
+            self.assertIsNone(coffee)
 
     def test_empty_coffeetank(self):
         coffeemachine = CoffeeMachine(1000, 0)
         with self.assertRaises(NoCoffeeBeansException) as context:
-            coffeemachine.get_americano()
+            coffee = coffeemachine.get_americano()
+            self.assertIsNone(coffee)
 
     def test_empty_coffetank_and_watertank(self):
 
         coffeemachine = CoffeeMachine(0, 0)
         with self.assertRaises(NoWaterException) as context:
-            coffeemachine.get_americano()
+            coffee = coffeemachine.get_americano()
+            self.assertIsNone(coffee)
 
         coffeemachine.fill_water(1000)
 
         with self.assertRaises(NoCoffeeBeansException) as context:
-            coffeemachine.get_americano()
+            coffee = coffeemachine.get_americano()
+            self.assertIsNone(coffee)
 
         coffeemachine.fill_coffee(222)
 
-        coffeemachine.get_americano()
+        coffee = coffeemachine.get_americano()
+        self.assertEqual('Americano', coffee.name)
 
     def test_almost_empty_coffeetank(self):
         coffeemachine = CoffeeMachine(1000, 29)
 
         with self.assertRaises(NoCoffeeBeansException) as context:
-            coffeemachine.get_espresso()
+            coffee = coffeemachine.get_espresso()
+            self.assertIsNone(coffee)
 
         coffeemachine.fill_coffee(2)
 
-        coffeemachine.get_americano()
+        coffee = coffeemachine.get_americano()
+        self.assertEqual('Americano', coffee.name)
 
     def test_maitenance_window(self):
         coffeemachine = CoffeeMachine(1000, 500)
@@ -46,7 +53,8 @@ class TestCoffeeMachine(unittest.TestCase):
         # next coffee should cause problem with coffee machine
 
         with self.assertRaises(MaitenanceException) as context:
-            coffeemachine.get_late_machiato()
+            coffee = coffeemachine.get_late_machiato()
+            self.assertIsNone(coffee)
 
 
 if __name__ == '__main__':
