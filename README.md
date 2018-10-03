@@ -1,1 +1,4 @@
 # coffee-machine
+
+# Tests
+run

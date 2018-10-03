@@ -1,5 +1,8 @@
 from collections import namedtuple
 from datetime import datetime
+from time import sleep
+
+from tqdm import tqdm
 
 
 class NoMilkException(Exception):
@@ -42,15 +45,26 @@ class CoffeeMachine:
 
     def fill_water(self, water_amount=500):
         self.watertank_level += water_amount
+        # TODO: exception or if for overflow
 
     def fill_coffee(self, coffeebeans_level_amount=200):
         self.coffeebeans_level += coffeebeans_level_amount
+        # TODO: exception or if for overflow
 
     def attach_milkbox(self, milkbox=1000):
         self.milk_level = milkbox
 
     def get_americano(self):
         return self._get_coffee('americano')
+
+    def get_espresso(self):
+        return self._get_coffee('espresso')
+
+    def get_capuchino(self):
+        return self._get_coffee('capuchino')
+
+    def get_late_machiato(self):
+        return self._get_coffee('late_machiato')
 
     def _get_coffee(self, coffee_type):
         if self.coffee_counter == CoffeeMachine.NEED_TECHNICAL_SERVICE_AFTER_N_COFFEES:
@@ -68,3 +82,14 @@ class CoffeeMachine:
 
         if coffee.milk > self.milk_level:
             raise NoMilkException()
+
+        self._prepare_coffee(coffee)
+
+    def _prepare_coffee(self, coffee):
+        self.coffeebeans_level -= coffee.coffee_beans
+        self.watertank_level -= coffee.water
+        self.milk_level -= coffee.milk
+
+        for x in tqdm(range(100)):
+            # TODO: more spectacular, progressbar of emptying tanks
+            sleep(0.5)
